@@ -1,0 +1,35 @@
+##C:\Users\junghyun\Documents\Codes\yolov5>python train.py --img 320 --batch 16 --epochs 500 --data dataset.yaml --weights yolov5s.pt --workers 2
+##꼭 yolov5 들어간 상태에서 실행!!  directory 경로가 그렇게 설정되있음
+
+
+import torch
+from matplotlib import pyplot as plt
+import numpy as np
+import cv2
+
+import uuid
+import os
+import time
+
+model = torch.hub.load('ultralytics/yolov5', 'custom', path='runs/train/exp8/weights/last.pt', force_reload=True)    ##custom model upload
+
+img = os.path.join('data', 'images', 'awake.3596a908-17d2-11ee-aacd-0c7a1598e23d.jpg')   
+results = model(img)
+results.print()  ##exp8 은 epoch 500으로 했더니 잘 됨   // 추후에 사진 좀 더 추가해서 눈감고 있는것도 인식하게 하기
+
+cap = cv2.VideoCapture(0)
+while cap.isOpened():
+    ret, frame = cap.read()
+    
+    # Make detections 
+    results = model(frame)
+    
+    cv2.imshow('YOLO', np.squeeze(results.render()))
+    
+    if cv2.waitKey(5) & 0xFF == ord('q'):    ##q  키 누르면 종료됨
+        break
+cap.release()
+cv2.destroyAllWindows()
+
+
+##카메라의 프레임이 너무 낮음 해결해야됨
